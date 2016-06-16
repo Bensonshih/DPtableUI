@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>De-Identification Process</title>
+	<title>Data Setting</title>
 	<link rel="stylesheet"  href="css/bootstrap.css">
 	<link rel="stylesheet"  href="css/bootstrap-theme.min.css">
 	
@@ -193,7 +193,6 @@
 									    </th>
 									    <th>欄位</th>
 									    <th>型態</th>
-									    <th>區間數</th>
 									    <th>關聯屬性</th>
 									  </tr>
 									</thead>
@@ -203,7 +202,7 @@
 									    <td>身高</td>
 									    <td>
 									    	<div class="dropdown">
-											  	<select class="form-control select-sm">
+											  	<select class="form-control">
 												<option>連續型</option>
 												<option>類別型</option>
 												</select>
@@ -212,6 +211,7 @@
 									    <td>
 									    	<div class="form-group" >
 											<input type="text" class="form-control input-sm" id="sections">
+											<button class="HighLine" type="button" title="fishyu@iii.org.tw" style="border-width: 0px;"><u>余承叡</u>;</button>
 											</div>
 										</td>
 									    <td></td>
@@ -221,17 +221,12 @@
 									    <td>體重</td>
 									    <td>
 									    	<div class="dropdown">
-										  		<select class="form-control select-sm">
+										  		<select class="form-control">
 												<option>連續型</option>
 												<option>類別型</option>
 												</select>
 											</div>
 										</td>
-									    <td>
-									    	<div class="form-group" >
-											<input type="text" class="form-control input-sm" id="sections">
-											</div>
-									    </td>
 									    <td></td>
 									  </tr>
 									  <tr>
@@ -239,17 +234,12 @@
 									    <td>學歷</td>
 									    <td>
 									    	<div class="dropdown">
-										  		<select class="form-control select-sm">
+										  		<select class="form-control">
 												<option>連續型</option>
 												<option>類別型</option>
 												</select>
 											</div>
 										</td>
-									    <td>
-									    	<div class="form-group" >
-											<input type="text" class="form-control input-sm" id="sections">
-											</div>
-									    </td>
 									    <td></td>
 									  </tr>
 									  
@@ -259,9 +249,21 @@
 						    </div>
 						</div>
 						<div class="row">
-							<div >
-						      	
-						    </div>
+						<hr>
+							<div>
+								<div class="col-xs-3 col-lg-3">
+									<span class="lead"><strong>屬性分佈圖</strong></span>
+								</div>
+						      	<div class="col-xs-9 col-lg-9">
+							  		<select class="form-control">
+									<option>身高</option>
+									<option>體重</option>
+									<option>年齡</option>
+									<option>學歷</option>
+									<option>收入</option>
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
