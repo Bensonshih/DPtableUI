@@ -6787,3 +6787,13 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+
+/*user could select relative attributes for user-driven mechanism*/
+.attr_each {
+    position: relative;
+    display: inline-block;
+    background: #ddd;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 2px;
+}
