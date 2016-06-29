@@ -83,7 +83,7 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-xs-12 col-lg-12" style=" padding-top:10px;bottom:-20px;">
+						<!-- 	<div class="col-xs-12 col-lg-12" style=" padding-top:10px;bottom:-20px;">
 								<label class="control-label lead"><strong>原始資料集</strong></label>
 									<table class="table" style="table-layout:fixed;">
 									<thead style="background-color:yellow;">
@@ -93,11 +93,22 @@
 							         </thead>   
 								</table>
 							</div>
-							<div  class="table-responsive col-xs-12 col-lg-12" style="position:relative;overflow:auto;height:100%;width:100%" >
-								<table class="table table-bordered" style="table-layout:fixed">
-									<tbody id="sensitiveBody">
+							<div  class="table-responsive col-xs-12 col-lg-12" style="overflow:auto;height:100%;width:100%" >
+								<table class="table table-bordered" >
+									<tbody id="sensitiveBody" style="display:table-cell;">
 	        
 							        </tbody>
+								</table>
+							</div> -->
+							<div class="col-xs-12 col-lg-12 table-responsive" style="overflow:auto;width:100%;hight:100%;padding-top:10px;bottom:-20px;">
+								<label class="control-label lead"><strong>原始資料集</strong></label>
+								<table class="table table-bordered">
+									<thead style="background-color:yellow;">
+										<tr id="sensitiveHead">
+										</tr>
+									</thead>
+									<tbody id="sensitiveBody">
+									</tbody>
 								</table>
 							</div>
 			      		</div>
