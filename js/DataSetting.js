@@ -17,6 +17,9 @@ $(function() {
 	$("#fileclear").click(function(){
 		if($("#filenameinput").prop('disabled') == false){
 			$("#filenameinput").val("");
+			//clear table content
+			$("#sensitiveHead").html('');
+			$("#sensitiveBody").html('');
 		}
 	});
 

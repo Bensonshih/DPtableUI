@@ -45,6 +45,9 @@ function dataSettingManagement(){
 			},
 			error: function() {
 				console.log("file is not correct.");
+				//clear table content
+				$("#sensitiveHead").html('');
+				$("#sensitiveBody").html('');
 			}
 		});
 	}
