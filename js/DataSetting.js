@@ -7,7 +7,9 @@ $(function() {
 	$("#fileconfirm").click(function(){
 		$("#filenameinput").prop('disabled',true);
 		var filepath = "static/test/" + $("#filenameinput").val() + ".csv";
-		dataSettingManagement.showSensitiveTable(filepath);
+		var columns = dataSettingManagement.showSensitiveTable(filepath);
+		//list columns setting
+		dataSettingManagement.columnSetting(columns);
 	});
 
 	$("#filecancel").click(function(){		
@@ -20,6 +22,8 @@ $(function() {
 			//clear table content
 			$("#sensitiveHead").html('');
 			$("#sensitiveBody").html('');
+			//clear columns setting content
+			$("#columnSettingBody").html('');
 		}
 	});
 
