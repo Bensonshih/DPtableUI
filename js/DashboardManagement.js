@@ -1,6 +1,5 @@
 function dashboardManagement() {
-	utilities = new utilities();
-	var endpoint = utilities.endpoint;
+	var endpoint = UTILITIES.endpoint;
 
 	this.listTasks = function (size,page) {
 		var url = endpoint + "api/de-identification?page=" + page + "&size=" + size; 

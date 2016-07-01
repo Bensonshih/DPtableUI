@@ -2,14 +2,22 @@ $(function() {
 	
 	dataSettingManagement = new dataSettingManagement();
 
+	function _checkShowTable() {
+		console.log("check list table");
+		console.log("content keep: "+UTILITIES.contentKeep);
+		if (UTILITIES.contentKeep == true) {
+		var sensitiveData = $.cookie('Sensitive');
+		dataSettingManagement.listSensitiveTableAndColumnSetting(sensitiveData);
+		}
+	}
+	
+	_checkShowTable();
 
 	//click confirm button
 	$("#fileconfirm").click(function(){
 		$("#filenameinput").prop('disabled',true);
-		var filepath = "static/test/" + $("#filenameinput").val() + ".csv";
-		var columns = dataSettingManagement.showSensitiveTable(filepath);
-		//list columns setting
-		dataSettingManagement.columnSetting(columns);
+		var fileName = $("#filenameinput").val();
+		dataSettingManagement.showSensitiveTable(fileName);
 	});
 
 	$("#filecancel").click(function(){		
@@ -24,6 +32,10 @@ $(function() {
 			$("#sensitiveBody").html('');
 			//clear columns setting content
 			$("#columnSettingBody").html('');
+
+			//clear cookie and change flag
+			$.removeCookie('Sensitive', null);
+			UTILITIES.contentKeep = false;
 		}
 	});
 

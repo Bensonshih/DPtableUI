@@ -1,8 +1,33 @@
 function dataSettingManagement(){
-	utilities = new utilities();
-	var endpoint = utilities.endpoint;
 
-	this.columnSetting = function (columns) {
+	var endpoint = UTILITIES.endpoint;
+
+	this.listSensitiveTableAndColumnSetting = function(data){
+		columns = data.col_names;
+				
+		//build table head
+		$("#sensitiveHead").html('');
+		for (var k = 0; k < columns.length; k++) {
+			var tableHead = "";
+			tableHead += "<th class=\"text-center\">" + columns[k] + "</th>";
+			$("#sensitiveHead").append(tableHead);
+		};
+		
+		var rows = [];
+		rows = data.rows;
+		//build table body
+		$("#sensitiveBody").html('');
+		for (var i = 0; i < rows.length; i++) {
+			var rowInfo = "";
+			rowInfo += "<tr>";
+			for (var j = 0; j < rows[i].length; j++) {
+				rowInfo += "<td>" + rows[i][j] + "</td>";
+			};
+			rowInfo += "</tr>";
+			$("#sensitiveBody").append(rowInfo);
+		};
+
+		//list column setting info
 		$("#columnSettingBody").html('');
 		for (var i = 0; i < columns.length; i++) {
 			var columnName = columns[i];
@@ -27,16 +52,15 @@ function dataSettingManagement(){
 			columnInfo += "</span>";											
 			columnInfo += "</span></section></td></tr>";																				
 											   
-			
 			$("#columnSettingBody").append(columnInfo);
 		};
 	}
 
-	this.showSensitiveTable = function(filePath){
+	this.showSensitiveTable = function(fileName){
 		var url = endpoint + "api/data/";
 		var requestBody = new Object();
+		var filePath = "static/test/" + fileName + ".csv";
 		requestBody.file_path = filePath;
-		var columns = [];
 
 		$.ajax({
 			type: "Post",
@@ -50,29 +74,11 @@ function dataSettingManagement(){
 			data: JSON.stringify(requestBody),
 			success: function(data) {
 				var jsonData = JSON.parse(data);
-				columns = jsonData.col_names;
-				
-				//build table head
-				$("#sensitiveHead").html('');
-				for (var k = 0; k < columns.length; k++) {
-					var tableHead = "";
-					tableHead += "<th class=\"text-center\">" + columns[k] + "</th>";
-					$("#sensitiveHead").append(tableHead);
-				};
-				
-				var rows = [];
-				rows = jsonData.rows;
-				//build table body
-				$("#sensitiveBody").html('');
-				for (var i = 0; i < rows.length; i++) {
-					var rowInfo = "";
-					rowInfo += "<tr>";
-					for (var j = 0; j < rows[i].length; j++) {
-						rowInfo += "<td>" + rows[i][j] + "</td>";
-					};
-					rowInfo += "</tr>";
-					$("#sensitiveBody").append(rowInfo);
-				};
+				dataSettingManagement.listSensitiveTableAndColumnSetting(jsonData);
+				//save cookie and set flag
+				$.cookie('Sensitive',jsonData);
+				UTILITIES.contentKeep = true;
+				console.log("content keep in ajax: "+UTILITIES.contentKeep);
 			},
 			error: function() {
 				console.log("file is not correct.");
@@ -82,9 +88,6 @@ function dataSettingManagement(){
 				$("#columnSettingBody").html('');
 			}
 		});
-		
-		//used for list column setting
-		return columns;
 	}
 
 	
