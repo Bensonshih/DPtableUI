@@ -3,8 +3,7 @@ function dataSettingManagement(){
 	var endpoint = UTILITIES.endpoint;
 
 	this.listSensitiveTableAndColumnSetting = function(data){
-		columns = data.col_names;
-				
+		columns = data.col_names;	
 		//build table head
 		$("#sensitiveHead").html('');
 		for (var k = 0; k < columns.length; k++) {
@@ -29,17 +28,42 @@ function dataSettingManagement(){
 
 		//list column setting info
 		$("#columnSettingBody").html('');
+		var columnCookie;
+		if($.cookie("Column") != undefined){
+			columnCookie = JSON.parse($.cookie("Column"));
+		}
+		 
 		for (var i = 0; i < columns.length; i++) {
 			var columnName = columns[i];
-			var columnInfo = "";
+			var columnInfo = "";	
 
 			columnInfo += "<tr>";
-			columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\"></label></td>";
+			if (columnCookie != undefined) {
+				var checked = columnCookie[i].checkbox;
+				if (checked) {
+					columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\" checked ></label></td>";
+				}else{
+					columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\"></label></td>";
+				}
+			}else{
+				columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\"></label></td>";
+			}
 			columnInfo += "<td>" + columnName + "</td>";
 			columnInfo += "<td><div class=\"dropdown\">";
 			columnInfo += "<select class=\"form-control\">";
-			columnInfo += "<option>連續型</option>";
-			columnInfo += "<option>類別型</option>";
+			if (columnCookie != undefined) {
+				var selected = columnCookie[i].select;
+				if (selected == "C") {
+					columnInfo += "<option value=\"C\" selected>連續型</option>";
+					columnInfo += "<option value=\"D\">類別型</option>";
+				}else{
+					columnInfo += "<option value=\"C\">連續型</option>";
+					columnInfo += "<option value=\"D\" selected>類別型</option>";
+				}
+			}else{
+				columnInfo += "<option value=\"C\">連續型</option>";
+				columnInfo += "<option value=\"D\">類別型</option>";
+			}
 			columnInfo += "</select></div></td>";
 			columnInfo += "<td>";
 			columnInfo += "<section style=\"border-style:inset;\">";
@@ -54,6 +78,7 @@ function dataSettingManagement(){
 											   
 			$("#columnSettingBody").append(columnInfo);
 		};
+		
 	}
 
 	this.showSensitiveTable = function(fileName){
@@ -75,13 +100,13 @@ function dataSettingManagement(){
 			success: function(data) {
 				var jsonData = JSON.parse(data);
 				dataSettingManagement.listSensitiveTableAndColumnSetting(jsonData);
-				//save cookie and set flag
-				$.cookie('Sensitive',jsonData);
-				UTILITIES.contentKeep = true;
-				console.log("content keep in ajax: "+UTILITIES.contentKeep);
+				//save cookie
+				jsonData.fileName = fileName;
+				$.cookie('Sensitive',JSON.stringify(jsonData));
 			},
 			error: function() {
 				console.log("file is not correct.");
+				//$("#information").
 				//clear table content
 				$("#sensitiveHead").html('');
 				$("#sensitiveBody").html('');
