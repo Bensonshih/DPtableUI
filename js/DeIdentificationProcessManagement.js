@@ -1,8 +1,9 @@
-function dataSettingManagement(){
+function deIdentificationProcessManagement(){
 
 	var endpoint = UTILITIES.endpoint;
+	var dataPath = UTILITIES.data_path;
 
-	this.listSensitiveTableAndColumnSetting = function(data){
+	this.listSensitiveTable = function(data){
 		columns = data.col_names;	
 		//build table head
 		$("#sensitiveHead").html('');
@@ -24,46 +25,25 @@ function dataSettingManagement(){
 			};
 			rowInfo += "</tr>";
 			$("#sensitiveBody").append(rowInfo);
-		};
+		};	
+	}
+
+	this.listColumnsetting = function(columns){
+		//columns = data.col_names;
 
 		//list column setting info
-		$("#columnSettingBody").html('');
-		var columnCookie;
-		if($.cookie("Column") != undefined){
-			columnCookie = JSON.parse($.cookie("Column"));
-		}
-		 
+		$("#columnSettingBody").html('');	 
 		for (var i = 0; i < columns.length; i++) {
 			var columnName = columns[i];
 			var columnInfo = "";	
 
 			columnInfo += "<tr>";
-			if (columnCookie != undefined) {
-				var checked = columnCookie[i].checkbox;
-				if (checked) {
-					columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\" checked ></label></td>";
-				}else{
-					columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\"></label></td>";
-				}
-			}else{
-				columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"\"></label></td>";
-			}
+			columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"" + columnName +"\"></label></td>";
 			columnInfo += "<td>" + columnName + "</td>";
 			columnInfo += "<td><div class=\"dropdown\">";
 			columnInfo += "<select class=\"form-control\">";
-			if (columnCookie != undefined) {
-				var selected = columnCookie[i].select;
-				if (selected == "C") {
-					columnInfo += "<option value=\"C\" selected>連續型</option>";
-					columnInfo += "<option value=\"D\">類別型</option>";
-				}else{
-					columnInfo += "<option value=\"C\">連續型</option>";
-					columnInfo += "<option value=\"D\" selected>類別型</option>";
-				}
-			}else{
-				columnInfo += "<option value=\"C\">連續型</option>";
-				columnInfo += "<option value=\"D\">類別型</option>";
-			}
+			columnInfo += "<option value=\"C\">連續型</option>";
+			columnInfo += "<option value=\"D\">類別型</option>";
 			columnInfo += "</select></div></td>";
 			columnInfo += "<td>";
 			columnInfo += "<section style=\"border-style:inset;\">";
@@ -78,20 +58,19 @@ function dataSettingManagement(){
 											   
 			$("#columnSettingBody").append(columnInfo);
 		};
-		
 	}
 
-	this.showSensitiveTable = function(fileName){
+	this.showSensitiveTableAndColumnSetting = function(fileName){
 		var url = endpoint + "api/data/";
 		var requestBody = new Object();
-		var filePath = "static/test/" + fileName + ".csv";
+		var filePath = dataPath + fileName + ".csv";
 		requestBody.file_path = filePath;
 
 		$.ajax({
 			type: "Post",
 			url: url,
 			headers:{
-				"Content-Type":"application/json"
+				"Content-Type":"application/json;charset=utf-8"
 			},
 			dataType: "json",
 			async: false,
@@ -99,10 +78,9 @@ function dataSettingManagement(){
 			data: JSON.stringify(requestBody),
 			success: function(data) {
 				var jsonData = JSON.parse(data);
-				dataSettingManagement.listSensitiveTableAndColumnSetting(jsonData);
-				//save cookie
-				jsonData.fileName = fileName;
-				$.cookie('Sensitive',JSON.stringify(jsonData));
+				deIdentificationProcessManagement.listSensitiveTable(jsonData);
+				deIdentificationProcessManagement.listColumnsetting(jsonData.col_names);
+				window.localStorage.setItem("columns",JSON.stringify(jsonData.col_names));
 			},
 			error: function() {
 				console.log("file is not correct.");
@@ -115,5 +93,60 @@ function dataSettingManagement(){
 		});
 	}
 
-	
+	this.initDeIdentificationTask = function(requestBody) {
+		var url = endpoint + "api/de-identification/";
+		var response = null;
+		//console.log(requestBody);
+		$.ajax({
+			type: "Post",
+			url: url,
+			headers:{
+				"Content-Type":"application/json;charset=utf-8"
+			},
+			dataType: "json",
+			async: false,
+			processData: false,
+			data: JSON.stringify(requestBody),
+			success: function(data) {
+				response = data;
+			},
+			error: function() {
+				console.log("initiate DI task fail.");
+			
+			}
+		});
+
+		return response;
+	}
+
+	this.execDeIdentificationTask = function(requestBody) {
+		var taskID = requestBody.task_id;
+		var url = endpoint + "api/de-identification/" + taskID + "/job/";
+		var response = null;
+		$.ajax({
+			type: "Post",
+			url: url,
+			headers:{
+				"Content-Type":"application/json"
+			},
+			dataType: "json",
+			async: true,
+			processData: false,
+			data: JSON.stringify(requestBody),
+			success: function(data) {
+				console.log("execute DI task success.");
+			},
+			complete: function(data){
+				response = data;
+				console.log(response);
+			},
+			error: function() {
+				console.log("execute DI task fail.");
+			
+			}
+		});
+		console.log(response);
+		return response;
+	}
+
 }

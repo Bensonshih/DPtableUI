@@ -6,7 +6,7 @@ $(function() {
 
 	//click create button
 	$("#cDPTableTask").click(function(){
-		location.href = "/privacy/web/DataSetting.html"
+		location.href = "/privacy/web/DeIdentificationProcess.html";
 	});
 
 	//check all box
