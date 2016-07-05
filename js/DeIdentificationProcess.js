@@ -75,7 +75,7 @@ $(function() {
 	//execute the De-Identification task
 	$("#execDI").click(function(){	
 		var init_response = _initDI();
-		var exec_response = _execDI(init_response);
+		_execDI(init_response);
 	});
 
 	$(window).on('keydown',function(e){

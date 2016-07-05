@@ -133,20 +133,52 @@ function deIdentificationProcessManagement(){
 			async: true,
 			processData: false,
 			data: JSON.stringify(requestBody),
-			success: function(data) {
+			success: function(data,textStatus) {
 				console.log("execute DI task success.");
+				// console.log(data);
+				// console.log(textStatus);
 			},
-			complete: function(data){
-				response = data;
-				console.log(response);
+			complete: function(xhr,textStatus,error){
+				console.log(xhr);
+				console.log(textStatus);
+				console.log(error);
+				if(textStatus == "success"){
+					var responseJSON = xhr.responseJSON;
+					var statistics_err = responseJSON.statistics_err;
+					var columns = JSON.parse(window.localStorage.getItem("columns"));
+					var tableHead = "";
+					//build table head
+					$("#statisticsHead").html('');
+					tableHead += "<th></th>";
+					for (var k = 0; k < columns.length; k++) {
+						tableHead += "<th class=\"text-center\">" + columns[k] + "</th>";
+						$("#statisticsHead").append(tableHead);
+					};
+					//build table body
+					$("#statisticsBody").html('');
+					for (var key in statistics_err) {
+						var statistics_key = key;
+						var statistics_value = statistics_err.key;
+						var rowInfo = "";
+						rowInfo += "<tr>";
+						rowInfo += "<td>" + statistics_key + "</td>";
+						for (var cell in statistics_value) {
+							rowInfo += "<td>" + statistics_value.cell + "</td>";
+						};
+						rowInfo += "</tr>";
+						$("#statisticsBody").append(rowInfo);
+					};
+					//enable the download button	
+					$("#download").prop('disabled',false);
+				}else if(textStatus == "error"){
+
+				}
 			},
 			error: function() {
 				console.log("execute DI task fail.");
 			
 			}
 		});
-		console.log(response);
-		return response;
 	}
 
 }
