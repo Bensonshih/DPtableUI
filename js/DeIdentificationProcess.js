@@ -1,6 +1,7 @@
 $(function() {
 
 	var dataPath = UTILITIES.data_path;
+	var initDI_response = {};
 	var loadingOption ={
 		ajax: false,
 		imgPath    : 'images/ajax-loading.gif',
@@ -13,8 +14,12 @@ $(function() {
 	$("#fileconfirm").click(function(){
 		$("#filenameinput").prop('disabled',true);
 		var fileName = $("#filenameinput").val();
+		var data = {};
+		data.fileName = fileName;
+		//for list default column setting
+		data.default = true;
 		loading.open();
-		deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(fileName);
+		deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(data);
 		loading.close();
 	});
 
@@ -33,6 +38,7 @@ $(function() {
 
 			//clear the local storage
 			localStorage.removeItem("columns");
+			localStorage.removeItem("columnSetting");
 		}
 	});
 
@@ -55,6 +61,9 @@ $(function() {
 		//     jsonObject.select = select; 
 		//     jsonArray.push(jsonObject); 
 		//  });
+
+		//begin to initiate the DI task
+		init_response = _initDI();
 		
 	});
 
@@ -68,13 +77,16 @@ $(function() {
 		if($("#columnSettingBody").find("input,select,section").prop('disabled') == false){
 			var columns = [];
 			columns = JSON.parse(window.localStorage.getItem("columns"));
-			deIdentificationProcessManagement.listColumnsetting(columns);
+			var data = {};
+			data.col_names = columns;
+			//for list default column setting
+			data.default = true;
+			deIdentificationProcessManagement.listColumnsetting(data);
 		}
 	});
 
 	//execute the De-Identification task
 	$("#execDI").click(function(){	
-		var init_response = _initDI();
 		_execDI(init_response);
 	});
 
@@ -94,7 +106,9 @@ $(function() {
 	var _initDI = function(){
 		var initDI_requestBody = {};
 		var filename = "";
-		var selected_attrs = [];
+		var selected_attrs = {};
+		var selected_names = [];
+		var selected_types = [];
 		var response;
 
 		if($("#filenameinput").prop('disabled') && $("#filenameinput").val() != undefined && localStorage.getItem("columns") != undefined){
@@ -108,12 +122,15 @@ $(function() {
 			var jsonObject = {};
 			var selected_name = $(this).val();
 			var selected_type = $(this).parent().parent().parent().find("select").val();
-			jsonObject.attr_name = selected_name;
-			jsonObject.dtype = selected_type;
-			selected_attrs.push(jsonObject);
+			selected_names.push(selected_name);
+			selected_types.push(selected_type);
 		});
-		
+
+		selected_attrs.names = selected_names;
+		selected_attrs.types = selected_types;
 		initDI_requestBody.selected_attrs = selected_attrs;
+		//store the columns setting info
+		window.localStorage.setItem("columnSetting",JSON.stringify(initDI_requestBody));
 		response = deIdentificationProcessManagement.initDeIdentificationTask(initDI_requestBody);
 
 		return response;

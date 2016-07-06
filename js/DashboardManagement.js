@@ -1,5 +1,6 @@
 function dashboardManagement() {
 	var endpoint = UTILITIES.endpoint;
+	deIdentificationProcessManagement = new deIdentificationProcessManagement();
 
 	this.listTasks = function (size,page) {
 		var url = endpoint + "api/de-identification?page=" + page + "&size=" + size; 
@@ -65,6 +66,37 @@ function dashboardManagement() {
 		});
 	}
 
+	this.editTask = function (task_id) {
+		var url = endpoint + "api/de-identification/" + task_id +"/"; 
+
+		$.ajax({
+			type: "Get",
+			url: url,
+			headers:{
+				"Content-Type":"application/json"
+			},
+			dataType: "json",
+			processData: false,
+			//data: JSON.stringify(requestBody),
+			success: function(data) {
+				console.log("get record back success");
+			},
+			error: function() {
+				console.log("get record back fail");
+			},
+			complete: function(xhr,textStatus,error){
+				if(textStatus == "success"){
+					var responseJSON = xhr.responseJSON;
+					_reappearDIPage(responseJSON);
+				}else if(textStatus == "error"){
+					location.href = "/privacy/";
+				}
+			}
+		});
+
+
+	}
+
 	this.deleteTasks = function (requestBody) {
 		var url = endpoint + "api/de-identification?page=" + page + "&size=" + size; 
 
@@ -84,9 +116,21 @@ function dashboardManagement() {
 				
 			}
 		});
-
-
 	}
 
-	
+	var _reappearDIPage = function(jsonData){
+		var data_path = jsonData.data_path;
+		var selected_attrs = jsonData.selected_attrs;
+		var words = data_path.split("/");
+		var file_name = words[words.length-1].replace(".csv","");
+		var inputData = {};
+
+		inputData.default = false;
+		inputData.fileName = file_name;
+		inputData.selected_attrs = selected_attrs;
+
+		deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(inputData);
+		window.localStorage.setItem("columnSetting",JSON.stringify(selected_attrs));
+		location.href = "/privacy/web/DeIdentificationProcess.html";
+	}
 }
