@@ -129,8 +129,28 @@ function dashboardManagement() {
 		inputData.fileName = file_name;
 		inputData.selected_attrs = selected_attrs;
 
-		deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(inputData);
-		window.localStorage.setItem("columnSetting",JSON.stringify(selected_attrs));
-		location.href = "/privacy/web/DeIdentificationProcess.html";
+		console.log("Edit task input data: ");
+		console.log(inputData);
+
+		$.ajax({
+	        url: "/privacy/web/DeIdentificationProcess.html",
+	        success: function(result){
+	            // The request went well so all three actions below are performed iff the user
+	            // has not been redirected yet.. these 3 lines are competing
+	            // with the form submission that will win after all.
+	            
+	            console.log('success');
+	        },
+	        complete: function(complete){
+	        	console.log('complete'); 
+	        	deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(inputData);
+				window.localStorage.setItem("columnSetting",JSON.stringify(selected_attrs));
+	        },
+	        error: function(e) {  console.log('fail'); 
+	        }
+    	});
+
+		
+		
 	}
 }

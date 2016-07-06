@@ -165,7 +165,7 @@ function deIdentificationProcessManagement(){
 	this.initDeIdentificationTask = function(requestBody) {
 		var url = endpoint + "api/de-identification/";
 		var response = null;
-		//console.log(requestBody);
+		console.log(requestBody);
 		$.ajax({
 			type: "Post",
 			url: url,
@@ -213,16 +213,34 @@ function deIdentificationProcessManagement(){
 				console.log(error);
 				if(textStatus == "success"){
 					var responseJSON = xhr.responseJSON;
+					var download_path = responseJSON.synthetic_path;
 					var statistics_err = responseJSON.statistics_err;
 					var columnSetting = JSON.parse(window.localStorage.getItem("columnSetting"));
 					var selectedColumns = columnSetting.selected_attrs;
 
 					deIdentificationProcessManagement.listStatisticsErrorRate(statistics_err,selectedColumns);
-					
+					//display corresponding epsilon
+					$("#showEpsilon").html(responseJSON.epsilon.toString());
+
 					//enable the download button	
 					$("#download").prop('disabled',false);
-				}else if(textStatus == "error"){
+					//disable the stop button	
+					$("#stopDI").prop('disabled',true);
+					//enable the start button	
+					$("#execDI").prop('disabled',false);
 
+					//click the button of download synthetic data 
+					$("#download").click(function(e){	
+						e.preventDefault();  //stop the browser from following
+    					window.location.href = download_path;
+					});
+
+
+				}else if(textStatus == "error"){
+					//disable the stop button	
+					$("#stopDI").prop('disabled',true);
+					//enable the start button	
+					$("#execDI").prop('disabled',false);
 				}
 			},
 			error: function() {
@@ -233,27 +251,31 @@ function deIdentificationProcessManagement(){
 	}
 
 	this.listStatisticsErrorRate = function(statistics_err,selectedColumns){
+		var selectedLength = selectedColumns.names.length;
+
 		//build table head
 		$("#statisticsHead").html('');
-		for (var k = 0; k < selectedColumns.length; k++) {
+		for (var k = 0; k < selectedLength; k++) {
 			var tableHead = "";
 			if (k==0) {
 				tableHead = "<th></th>";
 			}
-			tableHead += "<th class=\"text-center\">" + selectedColumns[k].attr_name + "</th>";
+			tableHead += "<th class=\"text-center\">" + selectedColumns.names[k] + "</th>";
 			$("#statisticsHead").append(tableHead);
 		};
 		//build table body
 		$("#statisticsBody").html('');
-		for (var key in statistics_err) {
-			var statistics_key = key;
-			var statistics_value = statistics_err.key;
-			console.log("key: " + statistics_key + " value: " + statistics_value);
+		for (var i = 0; i < statistics_err.length; i++) {
+			var statistics_key = statistics_err[i].stat_name;
+			var statistics_value = statistics_err[i].value;
+			
 			var rowInfo = "";
 			rowInfo += "<tr>";
 			rowInfo += "<td>" + statistics_key + "</td>";
-			for (var cell in statistics_value) {
-				rowInfo += "<td>" + statistics_value.cell + "</td>";
+			for (var j = 0; j < selectedLength; j++) {
+				var name = selectedColumns.names[j];
+				console.log("error rate: " + statistics_value.name);
+				rowInfo += "<td>" + statistics_value.name + "</td>";
 			};
 			rowInfo += "</tr>";
 			$("#statisticsBody").append(rowInfo);

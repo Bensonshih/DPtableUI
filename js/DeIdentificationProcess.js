@@ -2,6 +2,7 @@ $(function() {
 
 	var dataPath = UTILITIES.data_path;
 	var initDI_response = {};
+	var execDI_response = {};
 	var loadingOption ={
 		ajax: false,
 		imgPath    : 'images/ajax-loading.gif',
@@ -82,13 +83,25 @@ $(function() {
 			//for list default column setting
 			data.default = true;
 			deIdentificationProcessManagement.listColumnsetting(data);
+			localStorage.removeItem("columnSetting");
 		}
 	});
 
 	//execute the De-Identification task
 	$("#execDI").click(function(){	
+		if(!$("#download").prop('disabled')){
+			$("#download").prop('disabled',true);
+		}
+		if($("#stopDI").prop('disabled')){
+			$("#stopDI").prop('disabled',false);
+		}
+		if(!$("#execDI").prop('disabled')){
+			$("#execDI").prop('disabled',true);
+		}
 		_execDI(init_response);
 	});
+
+	
 
 	$(window).on('keydown',function(e){
 		var keycode = e.keyCode;

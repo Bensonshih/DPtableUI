@@ -21,4 +21,5 @@ $(function() {
 		checkboxes.prop('checked', $(this).prop("checked"));
 	});
 
+
 });
