@@ -87,7 +87,8 @@ function dashboardManagement() {
 			complete: function(xhr,textStatus,error){
 				if(textStatus == "success"){
 					var responseJSON = xhr.responseJSON;
-					_reappearDIPage(responseJSON);
+					_parseInfo(responseJSON);
+					window.location.href = "/privacy/web/DeIdentificationProcess.html?default=false";
 				}else if(textStatus == "error"){
 					location.href = "/privacy/";
 				}
@@ -98,7 +99,8 @@ function dashboardManagement() {
 	}
 
 	this.deleteTasks = function (requestBody) {
-		var url = endpoint + "api/de-identification?page=" + page + "&size=" + size; 
+		var task_id = requestBody.task_id;
+		var url = endpoint + "api/de-identification/" + task_id; 
 
 		$.ajax({
 			type: "Delete",
@@ -118,9 +120,10 @@ function dashboardManagement() {
 		});
 	}
 
-	var _reappearDIPage = function(jsonData){
+	var _parseInfo = function(jsonData){
 		var data_path = jsonData.data_path;
 		var selected_attrs = jsonData.selected_attrs;
+		var task_id = jsonData.task_id;
 		var words = data_path.split("/");
 		var file_name = words[words.length-1].replace(".csv","");
 		var inputData = {};
@@ -128,29 +131,10 @@ function dashboardManagement() {
 		inputData.default = false;
 		inputData.fileName = file_name;
 		inputData.selected_attrs = selected_attrs;
+		inputData.task_id = task_id;
 
 		console.log("Edit task input data: ");
 		console.log(inputData);
-
-		$.ajax({
-	        url: "/privacy/web/DeIdentificationProcess.html",
-	        success: function(result){
-	            // The request went well so all three actions below are performed iff the user
-	            // has not been redirected yet.. these 3 lines are competing
-	            // with the form submission that will win after all.
-	            
-	            console.log('success');
-	        },
-	        complete: function(complete){
-	        	console.log('complete'); 
-	        	deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(inputData);
-				window.localStorage.setItem("columnSetting",JSON.stringify(selected_attrs));
-	        },
-	        error: function(e) {  console.log('fail'); 
-	        }
-    	});
-
-		
-		
+		window.localStorage.setItem("info",JSON.stringify(inputData));
 	}
 }

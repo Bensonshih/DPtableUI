@@ -165,7 +165,7 @@ function deIdentificationProcessManagement(){
 	this.initDeIdentificationTask = function(requestBody) {
 		var url = endpoint + "api/de-identification/";
 		var response = null;
-		console.log(requestBody);
+		//console.log(requestBody);
 		$.ajax({
 			type: "Post",
 			url: url,
@@ -210,15 +210,12 @@ function deIdentificationProcessManagement(){
 			complete: function(xhr,textStatus,error){
 				console.log(xhr);
 				console.log(textStatus);
-				console.log(error);
 				if(textStatus == "success"){
 					var responseJSON = xhr.responseJSON;
 					var download_path = responseJSON.synthetic_path;
 					var statistics_err = responseJSON.statistics_err;
-					var columnSetting = JSON.parse(window.localStorage.getItem("columnSetting"));
-					var selectedColumns = columnSetting.selected_attrs;
 
-					deIdentificationProcessManagement.listStatisticsErrorRate(statistics_err,selectedColumns);
+					deIdentificationProcessManagement.listStatisticsErrorRate(statistics_err);
 					//display corresponding epsilon
 					$("#showEpsilon").html(responseJSON.epsilon.toString());
 
@@ -250,32 +247,60 @@ function deIdentificationProcessManagement(){
 		});
 	}
 
-	this.listStatisticsErrorRate = function(statistics_err,selectedColumns){
-		var selectedLength = selectedColumns.names.length;
+	this.getTaskDetail = function(task_id){
+		var taskID = requestBody.task_id;
+		var url = endpoint + "api/de-identification/" + task_id + "/job/";
+		var response = null;
+		$.ajax({
+			type: "Get",
+			url: url,
+			headers:{
+				"Content-Type":"application/json"
+			},
+			dataType: "json",
+			async: false,
+			processData: false,
+			data: JSON.stringify(requestBody),
+			success: function(data,textStatus) {
+				response = data;
+				// console.log(data);
+				// console.log(textStatus);
+			},
+			error: function() {
+				console.log("get the task detail fail");
+			}
+		});
+
+		return response;
+	}
+
+	this.listStatisticsErrorRate = function(statistics_err){
+		var measures = statistics_err.measures;
+		var values = statistics_err.values;
+		var selected_names = statistics_err.attrs;
 
 		//build table head
 		$("#statisticsHead").html('');
-		for (var k = 0; k < selectedLength; k++) {
+		for (var k = 0; k < selected_names.length; k++) {
 			var tableHead = "";
 			if (k==0) {
 				tableHead = "<th></th>";
 			}
-			tableHead += "<th class=\"text-center\">" + selectedColumns.names[k] + "</th>";
+			tableHead += "<th class=\"text-center\">" + selected_names[k] + "</th>";
 			$("#statisticsHead").append(tableHead);
 		};
 		//build table body
 		$("#statisticsBody").html('');
-		for (var i = 0; i < statistics_err.length; i++) {
-			var statistics_key = statistics_err[i].stat_name;
-			var statistics_value = statistics_err[i].value;
+		for (var i = 0; i < measures.length; i++) {
+			var statistics_key = measures[i];
+			var statistics_value = values[measures[i]];
 			
 			var rowInfo = "";
 			rowInfo += "<tr>";
 			rowInfo += "<td>" + statistics_key + "</td>";
-			for (var j = 0; j < selectedLength; j++) {
-				var name = selectedColumns.names[j];
-				console.log("error rate: " + statistics_value.name);
-				rowInfo += "<td>" + statistics_value.name + "</td>";
+			for (var j = 0; j < statistics_value.length; j++) {
+				var name = statistics_value[j];
+				rowInfo += "<td class=\"text-center\">" + name + "</td>";
 			};
 			rowInfo += "</tr>";
 			$("#statisticsBody").append(rowInfo);
