@@ -153,6 +153,7 @@ function deIdentificationProcessManagement(){
 			},
 			error: function() {
 				console.log("file is not correct.");
+				$("#information").html('資料預覽發生錯誤。');
 				//$("#information").
 				//clear table content
 				$("#sensitiveHead").html('');
@@ -181,7 +182,7 @@ function deIdentificationProcessManagement(){
 			},
 			error: function() {
 				console.log("initiate DI task fail.");
-			
+				$("#information").html('欄位資訊設定錯誤。');
 			}
 		});
 
@@ -242,13 +243,12 @@ function deIdentificationProcessManagement(){
 			},
 			error: function() {
 				console.log("execute DI task fail.");
-			
+				$("#information").html('去識別化任務發生錯誤。');
 			}
 		});
 	}
 
 	this.getTaskDetail = function(task_id){
-		var taskID = requestBody.task_id;
 		var url = endpoint + "api/de-identification/" + task_id + "/job/";
 		var response = null;
 		$.ajax({
@@ -260,17 +260,19 @@ function deIdentificationProcessManagement(){
 			dataType: "json",
 			async: false,
 			processData: false,
-			data: JSON.stringify(requestBody),
+			//data: JSON.stringify(requestBody),
 			success: function(data,textStatus) {
 				response = data;
-				// console.log(data);
+				 console.log("get the task detail success");
 				// console.log(textStatus);
 			},
 			error: function() {
 				console.log("get the task detail fail");
+				$("#information").html('讀取任務內容發生錯誤。');
 			}
 		});
 
+		console.log(response);
 		return response;
 	}
 

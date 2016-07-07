@@ -14,9 +14,7 @@ $(function() {
 
 	var _checkRender = function(){
 		isDefault = location.href.split("?default=")[1];
-		console.log("isDefault: " + isDefault);
 		if((isDefault == false || isDefault == "false") && isDefault != undefined){
-			console.log("in old record");
 			var inputData = JSON.parse(window.localStorage.getItem("info"));
 			deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(inputData);
 			var input_fileName = inputData.fileName;
@@ -25,7 +23,6 @@ $(function() {
 			//disabled the column setting panel
 			_columnSettingPanelControl(true);
 			window.localStorage.setItem("columnSetting",JSON.stringify(inputData.selected_attrs));
-			//window.localStorage.removeItem("info");
 		}
 	}
 
@@ -62,16 +59,15 @@ $(function() {
 		return response;
 	}
 
-	var _execDI = function(initDI_response){
+	var _execDI = function(response){
 		var execDI_requestBody = {};	
 		var task_id = -1;
 		var privacy_level = -1;
 		var epsilon = -1.0;
-
 		
 		//the DI task is waitting
-		if(initDI_response.status == 0){
-			task_id = initDI_response.task_id;
+		if(response.status == 0){
+			task_id = response.task_id;
 			execDI_requestBody.task_id = task_id;
 			privacy_level = $("#PL-options").val();
 
@@ -148,6 +144,7 @@ $(function() {
 			//clear the local storage
 			localStorage.removeItem("columns");
 			localStorage.removeItem("columnSetting");
+			localStorage.removeItem("info");
 		}
 	});
 
@@ -194,11 +191,45 @@ $(function() {
 			data.default = true;
 			deIdentificationProcessManagement.listColumnsetting(data);
 			localStorage.removeItem("columnSetting");
+			localStorage.removeItem("info");
 		}
 	});
 
 	//execute the De-Identification task
-	$("#execDI").click(function(){	
+	$("#execDI").click(function(){
+		
+		if($("#filenameinput").prop('disabled') == false && $("#filenameinput").val() == ""){
+			$("#information").html('請輸入檔案。');
+			return;
+		}
+		if($("#columnSettingBody").find("input,select,section").prop('disabled') == false){
+			$("#information").html('請確認欄位資訊設定。');
+			return;
+		}else{
+			if($("#columnSettingBody input[type=checkbox]:checked").length == 0){
+				$("#information").html('請選擇欲去識別化之欄位。');
+				return;
+			}
+		}
+
+		if($.isEmptyObject(initDI_response) == true){
+			if(isDefault){
+				//conflict happened
+				$("#information").html('去識別化任務發生錯誤。');
+				return;
+			}
+			//old record is exist
+			var inputData = JSON.parse(window.localStorage.getItem("info"));
+			var task_id = inputData.task_id;
+			var records = deIdentificationProcessManagement.getTaskDetail(task_id);
+			var lastRecord = records[records.length-1];
+			initDI_response.task_id = task_id;
+			initDI_response.privacy_level = lastRecord.privacy_level;
+			initDI_response.epsilon = lastRecord.epsilon;
+			//set waitting status
+			initDI_response.status = 0;		
+		}
+
 		if(!$("#download").prop('disabled')){
 			$("#download").prop('disabled',true);
 		}
@@ -209,16 +240,6 @@ $(function() {
 			$("#execDI").prop('disabled',true);
 		}
 
-		if(initDI_response == null || initDI_response == undefined){
-			//old record is exist
-			var inputData = JSON.parse(window.localStorage.getItem("info"));
-			var task_id = inputData.task_id;
-			var records = deIdentificationProcessManagement.getTaskDetail(task_id);
-			var lastRecord = records[records.length-1];
-			initDI_response.task_id = task_id;
-			initDI_response.privacy_level = lastRecord.privacy_level;
-			initDI_response.epsilon = lastRecord.epsilon;		
-		}		
 		_execDI(initDI_response);
 	});
 
@@ -237,8 +258,10 @@ $(function() {
 			$("#fileconfirm").click();
 		}else if(keycode == 116){
 			//press F5
+			e.preventDefault();
 			$("#filenameinput").prop('disabled',false);
 			$("#fileclear").click();
+			window.localStorage.removeItem("info");
 			window.location.href = "/privacy/web/DeIdentificationProcess.html?default=true";
 		}
 	});
