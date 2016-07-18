@@ -113,6 +113,7 @@ $(function() {
 		//disable or enable the column setting panel	
 		$("#columnSettingBody").find("input,select,section").prop('disabled',disabled);
 	}
+
 	
 	//To check wether display record or not
 	_checkRender();
@@ -178,6 +179,59 @@ $(function() {
 	//click column setting cancel button
 	$("#columncancel").click(function(){
 		_columnSettingPanelControl(false);
+	});
+
+	// $(document).on('click','input[name="columnSet"]',function(){
+	// 	$(this).typeahead({source:[{id: "someId1", name: "Height"}, 
+ //            {id: "someId2", name: "Weight"}], 
+ //            autoSelect: true});
+	// 		if($(this).prop('disabled') == false){
+	// 		$(this).typeahead();
+	// 			$(this).change(function() {
+	// 	    	var current = $(this).typeahead("getActive");
+	// 	    	console.log(current);
+	// 		    if (current) {
+	// 		        // Some item from your model is active!
+	// 		        if (current.name == $(this).val()) {
+
+	// 		            // This means the exact match is found. Use toLowerCase() if you want case insensitive match.
+	// 		        } else {
+	// 		            // This means it is only a partial match, you can either add a new item 
+	// 		            // or take the active if you don't want new items
+	// 		        }
+	// 		    } else {
+	// 		        // Nothing is active so it is a new value (or maybe empty value)
+	// 		    }
+	// 			});
+	// 	}
+	// });
+	
+	$(document).on('click','input[name="columnSet"]',function(){
+		var attrs = JSON.parse(window.localStorage.getItem("columns"));
+		var attrNames = new Bloodhound({
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+		    queryTokenizer: Bloodhound.tokenizers.whitespace,
+		    local: $.map(attrs, function (attr) {
+		        return {
+		            name: attr
+		        };
+		    })
+		});
+		attrNames.initialize();
+
+		$(this).tagsinput({
+		    typeaheadjs: [{
+		          minLength: 1,
+		          highlight: true,
+		    },{
+		        minlength: 1,
+		        name: 'attrNames',
+		        displayKey: 'name',
+		        valueKey: 'name',
+		        source: attrNames.ttAdapter()
+		    }],
+		    freeInput: true
+		});
 	});
 
 	//click column setting reset button
@@ -253,17 +307,18 @@ $(function() {
 	$(window).on('keydown',function(e){
 		var keycode = e.keyCode;
 		//console.log("keycode: " + keycode);
-		if(keycode == 13){
-			//press enter
-			$("#fileconfirm").click();
-		}else if(keycode == 116){
+		if(keycode == 116){
 			//press F5
 			e.preventDefault();
 			$("#filenameinput").prop('disabled',false);
 			$("#fileclear").click();
 			window.localStorage.removeItem("info");
 			window.location.href = "/privacy/web/DeIdentificationProcess.html?default=true";
-		}
+		 }
+		//else if(keycode == 13){
+		// 	//press enter
+		// 	//$("#fileconfirm").click();
+		// }
 	});
 
 	

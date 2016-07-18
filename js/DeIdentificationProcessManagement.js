@@ -110,15 +110,14 @@ function deIdentificationProcessManagement(){
 			columnInfo += "<option value=\"D\">類別型</option>";
 			columnInfo += "</select></div></td>";
 			columnInfo += "<td>";
-			columnInfo += "<section style=\"border-style:inset;\">";
-			columnInfo += "<span class=\"attr_each\">" + columns[1];											
-			columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\" title=\"移除屬性\">";													
-			columnInfo += "</span>";												
-			columnInfo += "</span>";											
-			columnInfo += "<span class=\"attr_each\">" + columns[2];											
-			columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\">";										
-			columnInfo += "</span>";											
-			columnInfo += "</span></section></td></tr>";																				
+			// columnInfo += "<section style=\"border-style:inset;\">";
+			// columnInfo += "<span class=\"attr_each\">" + columns[1];											
+			// columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\" title=\"移除屬性\">";													
+			// columnInfo += "</span>";
+			// columnInfo += "</span>";																																	
+			// columnInfo += "</section>"
+			columnInfo += "<input type=\"text\" value=\"\" name=\"columnSet\" class=\"form-control\" data-role=\"tagsinput\" data-provide=\"typeahead\"/>";
+			columnInfo += "</td></tr>";																				
 											   
 			$("#columnSettingBody").append(columnInfo);
 			}
@@ -232,7 +231,9 @@ function deIdentificationProcessManagement(){
 						e.preventDefault();  //stop the browser from following
     					window.location.href = download_path;
 					});
-
+					console.log("success DI");
+					$("#information").parent().css('color','green');
+					$("#information").html('去識別化任務完成。');
 
 				}else if(textStatus == "error"){
 					//disable the stop button	
