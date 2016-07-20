@@ -127,6 +127,15 @@ $(function() {
 		//for list default column setting
 		data.default = true;		
 		deIdentificationProcessManagement.showSensitiveTableAndColumnSetting(data);
+
+		//get ready for user driven mechanism
+		var attrs = JSON.parse(window.localStorage.getItem("columns"));
+		$('input[name="columnSet"]').tagsinput({
+			typeahead: {
+		    source: attrs
+		  	},
+		  	freeInput: true
+		});
 	});
 
 	$("#filecancel").click(function(){		
@@ -206,32 +215,11 @@ $(function() {
 	// 	}
 	// });
 	
-	$(document).on('click','input[name="columnSet"]',function(){
-		var attrs = JSON.parse(window.localStorage.getItem("columns"));
-		var attrNames = new Bloodhound({
-			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-		    queryTokenizer: Bloodhound.tokenizers.whitespace,
-		    local: $.map(attrs, function (attr) {
-		        return {
-		            name: attr
-		        };
-		    })
-		});
-		attrNames.initialize();
-
-		$(this).tagsinput({
-		    typeaheadjs: [{
-		          minLength: 1,
-		          highlight: true,
-		    },{
-		        minlength: 1,
-		        name: 'attrNames',
-		        displayKey: 'name',
-		        valueKey: 'name',
-		        source: attrNames.ttAdapter()
-		    }],
-		    freeInput: true
-		});
+	$(document).on('itemAdded','input[name="columnSet"]',function(){
+		 setTimeout(function(){
+        $(">input[type=text]",".bootstrap-tagsinput").val("");
+    	}, 1);
+		$(".bootstrap-tagsinput").css('width','100%');
 	});
 
 	//click column setting reset button
@@ -300,6 +288,7 @@ $(function() {
 	//detect the privacy level options changed
 	$("#PL-options").on('change',function(){	
 		_execButtonReady();
+		$("#information").html('');
 	});
 
 	

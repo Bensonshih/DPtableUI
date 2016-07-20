@@ -193,6 +193,20 @@ function deIdentificationProcessManagement(){
 		var url = endpoint + "api/de-identification/" + taskID + "/job/";
 		var response = null;
 		$.ajax({
+			// xhr: function() {
+			// //for download progress bar
+			// 	var xhr = new window.XMLHttpRequest();
+			// 	xhr.addEventListener("progress",function(e){
+			// 		if(e.lengthComputable){
+			// 			var percentComplete = e.loaded / e.total;
+			// 			console.log("complete: " + percentComplete);
+			// 			console.log("complete(Round): " + Math.round(percentComplete * 100));
+			// 			$("#dptableprogress").css({ "width": Math.round(percentComplete * 100) + "%" });
+			// 			$("#dptableprogress > span").html(Math.round(percentComplete * 100)+"%");
+			// 		}
+			// 	},false);
+			// 	return xhr;
+			// },
 			type: "Post",
 			url: url,
 			headers:{
@@ -202,6 +216,9 @@ function deIdentificationProcessManagement(){
 			async: true,
 			processData: false,
 			data: JSON.stringify(requestBody),
+			beforeSend:function(){
+                    $('#dptableprogress').show();
+            },
 			success: function(data,textStatus) {
 				console.log("execute DI task success.");
 				// console.log(data);
@@ -234,6 +251,7 @@ function deIdentificationProcessManagement(){
 					console.log("success DI");
 					$("#information").parent().css('color','green');
 					$("#information").html('去識別化任務完成。');
+					$('#dptableprogress').hide();
 
 				}else if(textStatus == "error"){
 					//disable the stop button	
@@ -246,6 +264,20 @@ function deIdentificationProcessManagement(){
 				console.log("execute DI task fail.");
 				$("#information").html('去識別化任務發生錯誤。');
 			}
+			// xhr: function() {
+			// 	var xhr = new window.XMLHttpRequest();
+			// 	xhr.addEventListener("progress",function(e){
+			// 		if(e.lengthComputable){
+			// 			var percentComplete = e.loaded / e.total;
+			// 			console.log("complete: " + percentComplete);
+			// 			console.log("complete(Round): " + Math.round(percentComplete * 100));
+			// 			$("#dptableprogress").css({ "width": Math.round(percentComplete * 100) + "%" });
+			// 			$("#dptableprogress > span").html(Math.round(percentComplete * 100)+"%");
+			// 		}
+			// 	},false);
+
+			// }
+		
 		});
 	}
 
