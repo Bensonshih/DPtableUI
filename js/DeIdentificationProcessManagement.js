@@ -3,6 +3,36 @@ function deIdentificationProcessManagement(){
 	var endpoint = UTILITIES.endpoint;
 	var dataPath = UTILITIES.data_path;
 
+	function _showSpin(){
+		console.log("start loading spin");
+      var spinnerOpts = {
+        lines: 13, // The number of lines to draw
+        length: 20, // The length of each line
+        width: 10, // The line thickness
+        radius: 30, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        direction: 1, // 1: clockwise, -1: counterclockwise
+        color: '#000', // #rgb or #rrggbb or array of colors
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: '50%', // Top position relative to parent in px
+        left: '50%', // Left position relative to parent in px
+        shadow: true
+      };
+      var spinTarget = document.getElementById('bigContainer');
+      spinner = new Spinner(spinnerOpts).spin(spinTarget);
+    };
+
+    function _closeSpin(){
+    	console.log("stop loading spin");
+      spinner.stop();
+    };
+
 	this.listSensitiveTable = function(data){
 		columns = data.col_names;	
 		//build table head
@@ -158,6 +188,17 @@ function deIdentificationProcessManagement(){
 				$("#sensitiveHead").html('');
 				$("#sensitiveBody").html('');
 				$("#columnSettingBody").html('');
+			},
+			beforeSend: function(){
+				// var target = document.getElementById('bigContainer');
+				// console.log(target);
+				// console.log($("#bigContainer"));
+				// spinner.spin(target);
+				_showSpin();
+			},
+			complete: function() {
+				//spinner.spin();
+				_closeSpin();
 			}
 		});
 	}
@@ -182,6 +223,17 @@ function deIdentificationProcessManagement(){
 			error: function() {
 				console.log("initiate DI task fail.");
 				$("#information").html('欄位資訊設定錯誤。');
+			},
+			beforeSend: function(){
+				_showSpin();
+				// var target = document.getElementById('bigContainer');
+				// console.log(target);
+				// console.log($("#bigContainer"));
+				// spinner.spin(target);
+			},
+			complete: function() {
+				_closeSpin();
+				//spinner.spin();
 			}
 		});
 
@@ -302,6 +354,12 @@ function deIdentificationProcessManagement(){
 			error: function() {
 				console.log("get the task detail fail");
 				$("#information").html('讀取任務內容發生錯誤。');
+			},
+			beforeSend: function(){
+				_showSpin();
+			},
+			complete: function() {
+				_closeSpin();
 			}
 		});
 

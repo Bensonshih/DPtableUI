@@ -8,7 +8,9 @@ $(function() {
 		tip: '請稍後...'
 	}
 	var loading = $.loading(loadingOption);
-	loading.ajax(true);
+	loading.ajax(false);
+	//var target = document.getElementById('body');
+	var spinner;
 	var isDefault = true;
 	deIdentificationProcessManagement = new deIdentificationProcessManagement();
 
@@ -114,12 +116,46 @@ $(function() {
 		$("#columnSettingBody").find("input,select,section").prop('disabled',disabled);
 	}
 
-	
+	function _showSpin(){
+		console.log("start loading spin");
+      var spinnerOpts = {
+        lines: 13, // The number of lines to draw
+        length: 20, // The length of each line
+        width: 10, // The line thickness
+        radius: 30, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        direction: 1, // 1: clockwise, -1: counterclockwise
+        color: '#000', // #rgb or #rrggbb or array of colors
+        speed: 1, // Rounds per second
+        trail: 60, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: '50%', // Top position relative to parent in px
+        left: '50%', // Left position relative to parent in px
+        shadow: true
+      };
+      var spinTarget = document.getElementById('bigContainer');
+      spinner = new Spinner(spinnerOpts).spin(spinTarget);
+    };
+
+    function _closeSpin(){
+    	console.log("stop loading spin");
+      spinner.stop();
+    };
+
+	//$("#bigContainer").spin();
+	_showSpin();
 	//To check wether display record or not
 	_checkRender();
+	_closeSpin();
+	//$("#bigContainer").spin(false);
 
 	//click confirm button
 	$("#fileconfirm").click(function(){
+		//_showSpin();
 		$("#filenameinput").prop('disabled',true);
 		var fileName = $("#filenameinput").val();
 		var data = {};
@@ -136,6 +172,7 @@ $(function() {
 		  	},
 		  	freeInput: true
 		});
+		//_closeSpin();
 	});
 
 	$("#filecancel").click(function(){		
@@ -166,7 +203,7 @@ $(function() {
 
 	//click column setting confirm button
 	$("#columnconfirm").click(function(){
-		//loading.open();
+		//_showSpin();
 		var jsonArray = [];
 		_columnSettingPanelControl(true);
 		// $('#columnSettingBody tr').each(function() {
@@ -182,7 +219,7 @@ $(function() {
 		//begin to initiate the DI task
 		initDI_response = _initDI();
 		_execButtonReady();
-		//loading.close();
+		//_closeSpin();
 	});
 
 	//click column setting cancel button
