@@ -6,15 +6,18 @@ function deIdentificationProcessManagement(){
 	var currentPath = window.location.pathname;
 	//used for difference between dashboard path and DI path
 	if(currentPath === "/privacy/"){
+		//in dashboard page
 		loadingGifPath = 'web/images/ajax-loading.gif';
 	}else{
 		loadingGifPath = 'images/ajax-loading.gif';
 	}
 	var loadingOption ={
 		imgPath    : loadingGifPath,
-		tip: '請稍後...'
+		tip: '請稍後...',
+		ajax: false
 	}
 	var loading = $.loading(loadingOption);
+
 
 	this.listSensitiveTable = function(data){
 		columns = data.col_names;	
@@ -77,15 +80,8 @@ function deIdentificationProcessManagement(){
 					
 					columnInfo += "</select></div></td>";
 					columnInfo += "<td>";
-					columnInfo += "<section style=\"border-style:inset;\">";
-					columnInfo += "<span class=\"attr_each\">" + columns[1];											
-					columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\" title=\"移除屬性\">";													
-					columnInfo += "</span>";												
-					columnInfo += "</span>";											
-					columnInfo += "<span class=\"attr_each\">" + columns[2];											
-					columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\">";										
-					columnInfo += "</span>";											
-					columnInfo += "</span></section></td></tr>";
+					columnInfo += "<input type=\"text\" value=\"\" name=\"columnSet\" class=\"form-control\" data-role=\"tagsinput\" data-provide=\"typeahead\"/>";										
+					columnInfo += "</td></tr>";
 				}else{
 				 	//it is not a selected attribute
 					columnInfo += "<td><label class=\"checkbox-inline\"><input type=\"checkbox\" value=\"" + columnName +"\"></label></td>";
@@ -96,15 +92,8 @@ function deIdentificationProcessManagement(){
 					columnInfo += "<option value=\"D\">類別型</option>";
 					columnInfo += "</select></div></td>";
 					columnInfo += "<td>";
-					columnInfo += "<section style=\"border-style:inset;\">";
-					columnInfo += "<span class=\"attr_each\">" + columns[1];											
-					columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\" title=\"移除屬性\">";													
-					columnInfo += "</span>";												
-					columnInfo += "</span>";											
-					columnInfo += "<span class=\"attr_each\">" + columns[2];											
-					columnInfo += "<span class=\"glyphicon glyphicon-remove-sign\" style=\"cursor: pointer;\">";										
-					columnInfo += "</span>";											
-					columnInfo += "</span></section></td></tr>";
+					columnInfo += "<input type=\"text\" value=\"\" name=\"columnSet\" class=\"form-control\" data-role=\"tagsinput\" data-provide=\"typeahead\"/>";								
+					columnInfo += "</td></tr>";
 				}
 				$("#columnSettingBody").append(columnInfo);
 			}
@@ -214,6 +203,8 @@ function deIdentificationProcessManagement(){
 	}
 
 	this.execDeIdentificationTask = function(requestBody) {
+		console.log("execDI requestBody:");
+		console.log(requestBody);
 		var taskID = requestBody.task_id;
 		var url = endpoint + "api/de-identification/" + taskID + "/job/";
 		var response = null;
@@ -325,7 +316,7 @@ function deIdentificationProcessManagement(){
 			}
 		});
 
-		console.log(response);
+		//console.log(response);
 		return response;
 	}
 

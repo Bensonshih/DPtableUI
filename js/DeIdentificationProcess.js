@@ -3,12 +3,12 @@ $(function() {
 	var dataPath = UTILITIES.data_path;
 	var initDI_response = {};
 	var execDI_response = {};
-	var loadingOption ={
-		imgPath    : 'images/ajax-loading.gif',
-		tip: '請稍後...'
-	}
-	var loading = $.loading(loadingOption);
-	loading.ajax(false);
+	// var loadingOption ={
+	// 	imgPath    : 'images/ajax-loading.gif',
+	// 	tip: '請稍後...',
+	// 	ajax: false
+	// }
+	// var loading = $.loading(loadingOption);
 	var isDefault = true;
 	deIdentificationProcessManagement = new deIdentificationProcessManagement();
 
@@ -236,10 +236,21 @@ $(function() {
 		}
 	});
 
+	$("#columnPanel").lobiPanel({
+	    reload: false,
+	    close: false,
+	    editTitle: false
+	});
+
+	//if unpin action is triggered
+	$('.lobipanel').on('onUnpin.lobiPanel', function(ev, lobiPanel){
+    	$("#columnSettingBody").parent("div").css("height","100%");
+	});
+
 	//execute the De-Identification task
 	$("#execDI").click(function(){
 		
-		if($("#filenameinput").prop('disabled') == false && $("#filenameinput").val() == ""){
+		if($("#filenameinput").val() == ""){
 			$("#information").html('請輸入檔案。');
 			return;
 		}
@@ -253,8 +264,10 @@ $(function() {
 			}
 		}
 
+		//if init object is empty,must prepare the init object in order to execute DI job
 		if($.isEmptyObject(initDI_response) == true){
-			if(isDefault){
+			//console.log("default DI task? " + isDefault);
+			if(isDefault == true || isDefault == "true"){
 				//conflict happened
 				$("#information").html('去識別化任務發生錯誤。');
 				return;
@@ -280,7 +293,8 @@ $(function() {
 		if(!$("#execDI").prop('disabled')){
 			$("#execDI").prop('disabled',true);
 		}
-
+		console.log("init object:");
+		console.log(initDI_response);
 		_execDI(initDI_response);
 	});
 
