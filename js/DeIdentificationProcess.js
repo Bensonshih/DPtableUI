@@ -114,6 +114,13 @@ $(function() {
 		$("#columnSettingBody").find("input,select,section").prop('disabled',disabled);
 	}
 
+	var _recoveryColumnSettingPanel = function(){
+		if($("#columnPanel").lobiPanel('isPinned') == false)
+			$("#columnPanel").lobiPanel('pin');
+		if($("#columnPanel").lobiPanel('isOnFullScreen') == true)
+			$("#columnPanel").lobiPanel('toSmallSize');
+	}
+
 	//To check wether display record or not
 	_checkRender();
 
@@ -167,6 +174,7 @@ $(function() {
 
 	//click column setting confirm button
 	$("#columnconfirm").click(function(){
+		_recoveryColumnSettingPanel();
 		var jsonArray = [];
 		_columnSettingPanelControl(true);
 		// $('#columnSettingBody tr').each(function() {
@@ -187,6 +195,7 @@ $(function() {
 	//click column setting cancel button
 	$("#columncancel").click(function(){
 		_columnSettingPanelControl(false);
+		_recoveryColumnSettingPanel();
 	});
 
 	// $(document).on('click','input[name="columnSet"]',function(){
@@ -242,9 +251,23 @@ $(function() {
 	    editTitle: false
 	});
 
-	//if unpin action is triggered
-	$('.lobipanel').on('onUnpin.lobiPanel', function(ev, lobiPanel){
-    	$("#columnSettingBody").parent("div").css("height","100%");
+	//if column setting panel`s fullscreen action is triggered
+	$('#columnPanel').on('onFullScreen.lobiPanel', function(ev, lobiPanel){
+    	$("#columnSettingBody").parent().parent().css("height","100%");
+    	$(".bootstrap-tagsinput").css('width','100%');
+	});
+	//if column setting panel collapsed from fullscreen action is triggered
+	$('#columnPanel').on('onSmallSize.lobiPanel', function(ev, lobiPanel){
+    	$("#columnSettingBody").parent().parent().css("height","200px");
+	});
+	//This event is triggered during the resize
+	$('#columnPanel').on('onResize.lobiPanel', function(ev, lobiPanel){
+    	$("#columnSettingBody").parent().parent().css("height","100%");
+    	$(".bootstrap-tagsinput").css('width','100%');
+	});
+	//if column setting panel`s pin action is triggered
+	$('#columnPanel').on('onPin.lobiPanel', function(ev, lobiPanel){
+    	$("#columnSettingBody").parent().parent().css("height","200px");
 	});
 
 	//execute the De-Identification task
